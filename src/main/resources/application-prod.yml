@@ -1,0 +1,79 @@
+# Production Profile - PostgreSQL Database Configuration
+# Active when: spring.profiles.active=prod
+# All values can be overridden via environment variables
+# See .env.example for complete configuration template
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/MoneyManager}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:20}
+      minimum-idle: ${DB_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:20000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:300000}
+      max-lifetime: ${DB_MAX_LIFETIME:1200000}
+  
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: ${JPA_FORMAT_SQL:false}
+        dialect: ${JPA_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+        jdbc:
+          batch_size: ${JPA_BATCH_SIZE:20}
+          fetch_size: ${JPA_FETCH_SIZE:50}
+        order_inserts: true
+        order_updates: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api}
+  error:
+    include-message: always
+    include-binding-errors: always
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.dinoventures: ${LOG_LEVEL_APP:INFO}
+    org.springframework.web: ${LOG_LEVEL_SPRING_WEB:WARN}
+    org.hibernate.SQL: ${LOG_LEVEL_SQL:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE_PATH:logs/app.log}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-secret-key-change-in-production-must-be-at-least-512-bits-this-is-a-very-long-secret-key-for-hs512-algorithm-security}
+    expiration: ${JWT_EXPIRATION:86400000}
+    refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  
+  security:
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200}
+      allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+      allowed-headers: ${CORS_ALLOWED_HEADERS:*}
+      allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
+      max-age: ${CORS_MAX_AGE:3600}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ACTUATOR_ENDPOINTS:health,info,metrics}
+  endpoint:
+    health:
+      show-details: ${ACTUATOR_HEALTH_SHOW_DETAILS:when-authorized}
+  metrics:
+    enable:
+      jvm: true
+      process: true
+      system: true

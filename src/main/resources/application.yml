@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: money-manager-backend
+  
+  # PROFILE CONFIGURATION
+  # Default profile: dev (H2 in-memory database)
+  # To use PostgreSQL: set SPRING_PROFILES_ACTIVE=prod before running
+  # Example: SPRING_PROFILES_ACTIVE=prod mvn spring-boot:run
+  profiles:
+    active: dev
