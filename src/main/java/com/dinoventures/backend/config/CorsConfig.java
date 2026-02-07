@@ -8,24 +8,25 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
-    @Value("${app.security.cors.allowed-origins}")
+    @Value("${app.security.cors.allowed-origins:*}")
     private String allowedOrigins;
 
-    @Value("${app.security.cors.allowed-methods}")
+    @Value("${app.security.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
     private String allowedMethods;
 
-    @Value("${app.security.cors.allowed-headers}")
+    @Value("${app.security.cors.allowed-headers:*}")
     private String allowedHeaders;
 
-    @Value("${app.security.cors.allow-credentials}")
+    @Value("${app.security.cors.allow-credentials:true}")
     private Boolean allowCredentials;
 
-    @Value("${app.security.cors.max-age}")
+    @Value("${app.security.cors.max-age:3600}")
     private Long maxAge;
 
     @Bean
@@ -33,19 +34,24 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Handle allowed origins
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-        configuration.setAllowedOrigins(origins);
+        if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
+            configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        } else {
+            configuration.setAllowedOrigins(Collections.singletonList("*"));
+        }
 
         // Handle allowed methods
-        List<String> methods = Arrays.asList(allowedMethods.split(","));
-        configuration.setAllowedMethods(methods);
+        if (allowedMethods != null && !allowedMethods.isEmpty()) {
+            configuration.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
+        } else {
+            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        }
 
         // Handle allowed headers
-        if (allowedHeaders.equals("*")) {
-            configuration.setAllowedHeaders(List.of("*"));
+        if (allowedHeaders != null && !allowedHeaders.equals("*")) {
+            configuration.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
         } else {
-            List<String> headers = Arrays.asList(allowedHeaders.split(","));
-            configuration.setAllowedHeaders(headers);
+            configuration.setAllowedHeaders(Collections.singletonList("*"));
         }
 
         configuration.setAllowCredentials(allowCredentials);
