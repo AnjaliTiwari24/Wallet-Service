@@ -1,9 +1,14 @@
-FROM eclipse-temurin:17-jdk-jammy
-
+# Stage 1: Build
+FROM maven:3.8.4-openjdk-17-slim AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the JAR file
-COPY target/money-manager-backend-1.0.0.jar app.jar
+# Stage 2: Run
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /app
+COPY --from=build /app/target/money-manager-backend-1.0.0.jar app.jar
 
 # Expose port
 EXPOSE 8080
