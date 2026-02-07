@@ -7,4 +7,4 @@ spring:
   # To use PostgreSQL: set SPRING_PROFILES_ACTIVE=prod before running
   # Example: SPRING_PROFILES_ACTIVE=prod mvn spring-boot:run
   profiles:
-    active: dev
+    active: prod
