@@ -1,12 +1,17 @@
 package com.dinoventures.backend.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class CorsConfig {
 
     @Value("${app.security.cors.allowed-origins}")
     private String allowedOrigins;
@@ -23,20 +28,31 @@ public class CorsConfig implements WebMvcConfigurer {
     @Value("${app.security.cors.max-age}")
     private Long maxAge;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        String[] headers;
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Handle allowed origins
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOrigins(origins);
+
+        // Handle allowed methods
+        List<String> methods = Arrays.asList(allowedMethods.split(","));
+        configuration.setAllowedMethods(methods);
+
+        // Handle allowed headers
         if (allowedHeaders.equals("*")) {
-            headers = new String[]{"*"};
+            configuration.setAllowedHeaders(List.of("*"));
         } else {
-            headers = allowedHeaders.split(",");
+            List<String> headers = Arrays.asList(allowedHeaders.split(","));
+            configuration.setAllowedHeaders(headers);
         }
-        
-        registry.addMapping("/api/**")
-                .allowedOrigins(allowedOrigins.split(","))
-                .allowedMethods(allowedMethods.split(","))
-                .allowedHeaders(headers)
-                .allowCredentials(allowCredentials)
-                .maxAge(maxAge);
+
+        configuration.setAllowCredentials(allowCredentials);
+        configuration.setMaxAge(maxAge);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
