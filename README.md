@@ -1,5 +1,7 @@
 # Money Manager Backend Application
 
+> **🚀 Live Demo / Base URL:** [https://wallet-service-production-408c.up.railway.app](https://wallet-service-production-408c.up.railway.app)
+
 A comprehensive, production-ready Spring Boot backend application for managing personal finances with transaction tracking and budget management features.
 
 ## Project Features
